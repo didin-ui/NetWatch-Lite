@@ -28,9 +28,6 @@ def load_devices():
 
 def save_devices(devices):
     """Save device list to JSON file."""
-    # Remove quality field before saving (optional)
-    # for dev in devices:
-    #     dev.pop("quality", None)
     with open(DATA_FILE, "w") as f:
         json.dump(devices, f, indent=4)
 
@@ -38,7 +35,8 @@ def ping_host(host, timeout=2):
     """Return (response_time_ms, success) or (None, False) on failure."""
     try:
         rtt = ping(host, timeout=timeout)
-        if rtt is None:
+        # Treat None or zero/negative values as failure
+        if rtt is None or rtt <= 0.0:
             return None, False
         return rtt * 1000, True  # convert to ms
     except Exception:
